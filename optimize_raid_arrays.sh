@@ -1,27 +1,33 @@
 #!/bin/bash
 
+# Stripe cache size.
+SCSIZE=8192
+# MD Rebuild rate 50,000 = 50MB/s.
+REBUILD_RATE=50000
+REBUILD_RATE_MIN=`expr $REBUILD_RATE / 10`
+# MD Member Read-ahead value
+MD_RAVAL=2048
+# MD Member NCQ depth.
+MD_NCQVAL=1
+# Default schedulres
+DEFAULT_SCHEDULER="noop"
+MD_SCHEDULER="noop"
+
+
+####
 NORMALDISKS=`ls /sys/block/ | egrep "(^sd|^hd)"`
 RAIDDISKS=`ls /sys/block/ | egrep "(^md)"`
 BLOCKDEV='/sbin/blockdev'
-#SCSIZE=16384
-SCSIZE=8192
-#REBUILD_RATE=28000
-#REBUILD_RATE=20000
-REBUILD_RATE=20000
-
-MD_RAVAL=2048
-MD_NCQVAL=1
-DEFAULT_SCHEDULER="deadline"
-MD_SCHEDULER="deadline"
-#MD_SCHEDULER="noop"
 MD_DEVICES=`ls /sys/block/ | egrep "(^md)"`
 MD_MEMBERS=`find /sys/devices/virtual/block/md*/slaves -type l | cut -d "/" -f 8 | cut -c 1-3`
 ALL_DEVICES=`find /sys/devices -name scheduler`
+####
+
 
 # blanket set scheduler
 for DEV in $ALL_DEVICES
 do
-	echo $DEFAULT_SCHEDULER > $DEV
+ echo $DEFAULT_SCHEDULER > $DEV
 done
 
 for DEV in $MD_MEMBERS
@@ -36,14 +42,18 @@ done
 
 for i in $RAIDDISKS
 do
- echo "Setting MD-block device $i read-ahead value to $MD_RAVAL and stripe-cache to $SCSIZE"
- #${BLOCKDEV} --getra /dev/$i
+ # Read-ahead value
+ echo "Setting MD-block device $i read-ahead value to $MD_RAVAL"
  ${BLOCKDEV} --setra $MD_RAVAL /dev/$i
- #cat /sys/block/$i/md/stripe_cache_size
- echo $SCSIZE > /sys/block/$i/md/stripe_cache_size
+ # Stripe cache
+ if [ -f /sys/block/$i/md/stripe_cache_size ]; then
+  echo setting $i stripe-cache size to $SCSIZE
+  echo $SCSIZE > /sys/block/$i/md/stripe_cache_size
+ fi
+
 done
 
 #sysctl dev.raid.speed_limit_min
 #sysctl dev.raid.speed_limit_max
-sysctl -w dev.raid.speed_limit_min=$REBUILD_RATE
+sysctl -w dev.raid.speed_limit_min=$REBUILD_RATE_MIN
 sysctl -w dev.raid.speed_limit_max=$REBUILD_RATE
