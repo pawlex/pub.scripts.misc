@@ -1,6 +1,9 @@
 #!/bin/sh
 
 # THIS WILL CONNECT A JAVAWS SESSION TO LANTRONIX IPKVM WITHOUT HAVING TO LOG-IN TO THE WEB INTERFACE.
+# You will need to modify "" to allow the execution of unsigned .jars
+## See: https://unix.stackexchange.com/questions/143805/running-unsigned-javaws-code/401275#401275
+
 
 
 $USERNAME="CHANGEME"
