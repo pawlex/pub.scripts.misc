@@ -13,6 +13,6 @@ LOADCOOKIE="-b cookie.curl"
 #
 AUTH=`curl -s ${STORECOOKIE} --data "nickname=''&login=$USERNAME&password=$PASSWORD&action_login=Login" http://$IPADDRESS/auth.asp`
 RETVAL=`curl -s ${LOADCOOKIE} http://$IPADDRESS/home.asp`
-ID=`echo ${RETVAL} | awk -F'=' '{ print $49}' | awk -F"'" '{ print $1 }'`
+ID=`echo ${RETVAL} | awk -F'=' '{ print $49 }' | awk -F"'" '{ print $1 }'`
 curl -s ${LOADCOOKIE} -o spider.jnlp http://$IPADDRESS/spider.jnlp?r=${ID}
 javaws ./spider.jnlp
