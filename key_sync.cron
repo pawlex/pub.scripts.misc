@@ -1,0 +1,4 @@
+# m h  dom mon dow   command
+#  “At minute 45 past every 12th hour.” 
+#  https://crontab.guru/#45_*/12_*_*_*
+45 */12 * * * ~/bin/key_sync.sh
