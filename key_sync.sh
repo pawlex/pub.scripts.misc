@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 
 USERNAME=pawlex
 CURL=/usr/bin/curl
