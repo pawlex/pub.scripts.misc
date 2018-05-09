@@ -12,7 +12,7 @@ if [ -f $CURL ]; then
 fi
 
 # If temp file exists and is not null
-if [ -s $TARGET.new ]; then
+if [ -s $TEMP ]; then
  # Overwrite authorized_keys with that on github
  mv -f $TEMP $TARGET
  chmod 600 $TARGET
