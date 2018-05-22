@@ -11,6 +11,7 @@ Flow:
 * Download .jnlp using current security token.
 * Execute .jnlp
 
-# harrys_process_gps_data
+### harrys_process_gps_data.py
+Harrys lap timer script to process GPS data, specifically:
 * converts time/date from UTC to LOCALTIME
 * splits gps/telemetry data into sessions, appropriate for import into race render.
