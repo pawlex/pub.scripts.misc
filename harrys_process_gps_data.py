@@ -1,8 +1,11 @@
 #!/usr/bin/python
 # pip install python-dateutil
 
-""" converts time from UTC to LOCALTIME in Harry's lap timer GPS database in csv format """
+""" 
+    Converts time from UTC to LOCALTIME in Harry's lap timer GPS database in csv format.
+    TODO:  Split output .csv files into "sessions"
 
+"""
 
 import csv
 from datetime import datetime
