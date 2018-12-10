@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # Stripe cache size.
-SCSIZE=8192
+SCSIZE=16384
 # MD Rebuild rate 50,000 = 50MB/s.
 REBUILD_RATE=50000
 REBUILD_RATE_MIN=`expr $REBUILD_RATE / 10`
 # MD Member Read-ahead value
-MD_RAVAL=2048
+MD_RAVAL=65536
 # MD Member NCQ depth.
 MD_NCQVAL=1
 # Default schedulres
@@ -27,7 +27,7 @@ ALL_DEVICES=`find /sys/devices -name scheduler`
 # blanket set scheduler
 for DEV in $ALL_DEVICES
 do
- echo $DEFAULT_SCHEDULER > $DEV
+ echo $DEFAULT_SCHEDULER > $DEV 2>&1 > /dev/null
 done
 
 for DEV in $MD_MEMBERS
