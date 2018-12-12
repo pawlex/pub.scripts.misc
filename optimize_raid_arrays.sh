@@ -5,18 +5,21 @@ SCSIZE=16384
 # MD Rebuild rate 50,000 = 50MB/s.
 REBUILD_RATE=50000
 REBUILD_RATE_MIN=`expr $REBUILD_RATE / 10`
-# MD Member Read-ahead value
-MD_RAVAL=65536
-# MD Member NCQ depth.
-MD_NCQVAL=1
+# MD device Read-ahead value
+MD_RAVAL=16384
+# MD member read-ahead value ( /512-byte )
+MDMEMBER_RAVAL=8192 # 4MB
+# MD Member NCQ depth.  Higher value = higher latency.
+MD_NCQVAL=31
 # Default schedulres
 DEFAULT_SCHEDULER="noop"
 MD_SCHEDULER="noop"
 
 
+
 ####
 NORMALDISKS=`ls /sys/block/ | egrep "(^sd|^hd)"`
-RAIDDISKS=`ls /sys/block/ | egrep "(^md)"`
+MD_DEVICES=`ls /sys/block/ | egrep "(^md)"`
 BLOCKDEV='/sbin/blockdev'
 MD_DEVICES=`ls /sys/block/ | egrep "(^md)"`
 MD_MEMBERS=`find /sys/devices/virtual/block/md*/slaves -type l | cut -d "/" -f 8 | cut -c 1-3`
@@ -38,17 +41,19 @@ do
  echo "[$DEV]: queue depth: $MD_NCQVAL"
  #cat /sys/block/$DEV/device/queue_depth
  echo $MD_NCQVAL > /sys/block/$DEV/device/queue_depth
+ echo "[$DEV]: read-ahead: $MDMEMBER_RAVAL"
+ ${BLOCKDEV} --setra $MDMEMBER_RAVAL /dev/$DEV
 done
 
-for i in $RAIDDISKS
+for DEV in $MD_DEVICES
 do
  # Read-ahead value
- echo "Setting MD-block device $i read-ahead value to $MD_RAVAL"
- ${BLOCKDEV} --setra $MD_RAVAL /dev/$i
+ echo "[$DEV]: read-ahead: $MD_RAVAL"
+ ${BLOCKDEV} --setra $MD_RAVAL /dev/$DEV
  # Stripe cache
- if [ -f /sys/block/$i/md/stripe_cache_size ]; then
-  echo setting $i stripe-cache size to $SCSIZE
-  echo $SCSIZE > /sys/block/$i/md/stripe_cache_size
+ if [ -f /sys/block/$DEV/md/stripe_cache_size ]; then
+  echo "[$DEV]: stripe-cache: $SCSIZE"
+  echo $SCSIZE > /sys/block/$DEV/md/stripe_cache_size
  fi
 
 done
