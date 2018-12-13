@@ -37,7 +37,7 @@ ALL_DEVICES=`find /sys/devices -name scheduler`
 echo "[ALL]: Setting default scheduler to $DEFAULT_SCHEDULER"
 for SYSPATH in $ALL_DEVICES
 do
-    echo $DEFAULT_SCHEDULER > $SYSPATH
+    echo $DEFAULT_SCHEDULER > $SYSPATH 2>&1 > /dev/null
 done
 
 for DEV in $MD_MEMBERS
